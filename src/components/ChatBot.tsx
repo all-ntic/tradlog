@@ -26,7 +26,10 @@ const ChatBot = () => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  const MAX_MESSAGE_LENGTH = 1000;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -47,7 +50,15 @@ const ChatBot = () => {
   };
 
   const sendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || isLoading) return;
+    
+    // Client-side validation
+    if (inputMessage.length > MAX_MESSAGE_LENGTH) {
+      setError(`Message trop long (maximum ${MAX_MESSAGE_LENGTH} caractères)`);
+      return;
+    }
+    
+    setError(null);
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -57,6 +68,7 @@ const ChatBot = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputMessage.trim();
     setInputMessage('');
     setIsLoading(true);
 
@@ -67,17 +79,17 @@ const ChatBot = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: userMessage.content,
-          conversationHistory: messages,
+          message: currentMessage,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Erreur de connexion avec l\'assistant');
-      }
-
       const data = await response.json();
-      const showQuoteButton = detectQuoteRequest(userMessage.content);
+      
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP ${response.status}`);
+      }
+      
+      const showQuoteButton = detectQuoteRequest(currentMessage);
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -90,10 +102,23 @@ const ChatBot = () => {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Erreur chatbot:', error);
+      
+      let errorContent = "Désolé, je rencontre un problème technique. Vous pouvez nous contacter directement au +225 07 00 08 08 33 ou sur WhatsApp.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes('429')) {
+          errorContent = "Vous envoyez trop de messages. Veuillez patienter une minute avant de réessayer.";
+        } else if (error.message.includes('403')) {
+          errorContent = "Accès refusé. Veuillez actualiser la page et réessayer.";
+        } else if (error.message.includes('400')) {
+          errorContent = "Message invalide. Veuillez vérifier votre message et réessayer.";
+        }
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Désolé, je rencontre un problème technique. Vous pouvez nous contacter directement au +225 07 00 08 08 33 ou sur WhatsApp.',
+        content: errorContent,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -205,26 +230,40 @@ const ChatBot = () => {
           </ScrollArea>
 
           <div className="p-4 border-t border-border">
+            {error && (
+              <div className="mb-2 p-2 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm rounded border border-red-200 dark:border-red-800">
+                {error}
+              </div>
+            )}
             <div className="flex space-x-2">
               <Input
                 value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
+                onChange={(e) => {
+                  setInputMessage(e.target.value);
+                  if (error) setError(null);
+                }}
                 onKeyPress={handleKeyPress}
                 placeholder="Tapez votre message..."
                 disabled={isLoading}
                 className="flex-1"
+                maxLength={MAX_MESSAGE_LENGTH}
               />
               <Button
                 onClick={sendMessage}
-                disabled={!inputMessage.trim() || isLoading}
+                disabled={!inputMessage.trim() || isLoading || inputMessage.length > MAX_MESSAGE_LENGTH}
                 size="icon"
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              Assistant IA • TRADLOG Côte d'Ivoire
-            </p>
+            <div className="flex justify-between items-center mt-2">
+              <p className="text-xs text-muted-foreground">
+                Messages confidentiels • TRADLOG Côte d'Ivoire
+              </p>
+              <span className="text-xs text-muted-foreground">
+                {inputMessage.length}/{MAX_MESSAGE_LENGTH}
+              </span>
+            </div>
           </div>
         </CardContent>
       </Card>
