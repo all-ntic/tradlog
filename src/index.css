@@ -8,35 +8,58 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* TRADLOG Brand Colors - Professional logistics theme */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0 0% 0%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* TRADLOG Primary - Orange brand color */
+    --primary: 20 95% 54%;  /* #F47A1F */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 25 100% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Professional secondary - Dark grey */
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - TRADLOG Orange variant */
+    --accent: 20 95% 54%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0 0% 90%;
+    --input: 0 0% 95%;
+    --ring: 20 95% 54%;
 
-    --radius: 0.5rem;
+    /* TRADLOG Design System */
+    --tradlog-black: 0 0% 0%;
+    --tradlog-orange: 20 95% 54%;
+    --tradlog-white: 0 0% 100%;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--tradlog-black)), hsl(var(--tradlog-black) / 0.9));
+    --gradient-orange: linear-gradient(135deg, hsl(var(--tradlog-orange)), hsl(var(--primary-glow)));
+    --gradient-overlay: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.3));
+    
+    /* Shadows */
+    --shadow-tradlog: 0 10px 30px -10px hsl(var(--tradlog-orange) / 0.3);
+    --shadow-card: 0 4px 20px -4px hsl(var(--tradlog-black) / 0.1);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
