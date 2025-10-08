@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -14,25 +16,55 @@ const ContactSection = () => {
     company: "",
     email: "",
     phone: "",
-    service: "",
+    subject: "",
     message: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send to your backend
-    toast({
-      title: "Demande envoyée !",
-      description: "Nous vous recontacterons dans les plus brefs délais.",
-    });
-    setFormData({
-      name: "",
-      company: "",
-      email: "",
-      phone: "",
-      service: "",
-      message: ""
-    });
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert([
+          {
+            name: formData.name.trim(),
+            company: formData.company.trim() || null,
+            email: formData.email.trim() || null,
+            phone: formData.phone.trim(),
+            subject: formData.subject || null,
+            message: formData.message.trim(),
+            status: 'new'
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "✅ Message envoyé avec succès",
+        description: "Votre message a bien été envoyé. Un conseiller TRADLOG vous recontactera sous peu.",
+      });
+
+      setFormData({
+        name: "",
+        company: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: ""
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer ou nous contacter par WhatsApp.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -150,18 +182,6 @@ const ContactSection = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input 
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required 
-                      placeholder="votre@email.com"
-                    />
-                  </div>
-                  <div>
                     <Label htmlFor="phone">Téléphone *</Label>
                     <Input 
                       id="phone"
@@ -173,17 +193,35 @@ const ContactSection = () => {
                       placeholder="+225 XX XX XX XX XX"
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="email">Email (facultatif)</Label>
+                    <Input 
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="votre@email.com"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="service">Prestation souhaitée</Label>
-                  <Input 
-                    id="service"
-                    name="service"
-                    value={formData.service}
-                    onChange={handleChange}
-                    placeholder="Transport, ciment, acier..."
-                  />
+                  <Label htmlFor="subject">Objet du message</Label>
+                  <Select 
+                    value={formData.subject} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez l'objet de votre demande" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Devis">Devis</SelectItem>
+                      <SelectItem value="Service">Service</SelectItem>
+                      <SelectItem value="Livraison">Livraison</SelectItem>
+                      <SelectItem value="Autre">Autre</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
@@ -202,9 +240,10 @@ const ContactSection = () => {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button 
                     type="submit" 
+                    disabled={isSubmitting}
                     className="bg-gradient-to-r from-primary to-primary-glow hover:shadow-tradlog flex-1"
                   >
-                    Envoyer ma demande
+                    {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
                   </Button>
                   <Button 
                     type="button"
