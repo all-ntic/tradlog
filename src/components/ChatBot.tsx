@@ -20,7 +20,7 @@ const ChatBot = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Bonjour ! Je suis l\'Assistant TRADLOG 👋 Comment puis-je vous aider avec vos besoins en logistique et matériaux de construction ?',
+      content: 'Bonjour 👋, je suis TRADLOG Assistant, votre conseiller digital. Je peux vous renseigner sur nos produits, services logistiques, ou vous aider à obtenir un devis. Que souhaitez-vous savoir ?',
       timestamp: new Date(),
     },
   ]);
