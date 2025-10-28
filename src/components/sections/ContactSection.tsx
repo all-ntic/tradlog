@@ -27,7 +27,7 @@ const ContactSection = () => {
 
     try {
       const { error } = await supabase
-        .from('contact_messages')
+        .from('tradlog_contacts')
         .insert([
           {
             name: formData.name.trim(),

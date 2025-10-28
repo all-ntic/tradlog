@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, ChevronDown } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -8,41 +8,42 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
 
 interface FAQ {
   id: string;
   question: string;
   answer: string;
-  category: string | null;
+  category: string;
 }
 
+// FAQ data from TRADLOG knowledge base
+const faqData: FAQ[] = [
+  { id: "1", question: "Quelle est l'activité principale de TRADLOG ?", answer: "TRADLOG est une entreprise ivoirienne spécialisée dans la logistique, le transport et la distribution de matériaux de construction.", category: "produits" },
+  { id: "2", question: "Où se situe votre siège ?", answer: "Notre siège est basé à Abidjan, avec des points de livraison dans tout le pays.", category: "support" },
+  { id: "3", question: "Quels sont vos produits les plus demandés ?", answer: "Les plus populaires sont le ciment Limak, le fer à béton, le sable, et les granulats.", category: "produits" },
+  { id: "4", question: "Proposez-vous des produits importés ?", answer: "Oui, certains aciers et accessoires proviennent de fabricants certifiés internationaux.", category: "produits" },
+  { id: "5", question: "Fournissez-vous aux particuliers ?", answer: "Oui, nous travaillons avec particuliers, PME et grandes entreprises du BTP.", category: "produits" },
+  { id: "6", question: "Est-il possible de commander à distance ?", answer: "Oui, vous pouvez commander par WhatsApp, email ou téléphone. Le devis et le bon de livraison vous sont envoyés électroniquement.", category: "devis" },
+  { id: "7", question: "Comment demander un devis ?", answer: "Via le formulaire sur notre site ou directement par WhatsApp : https://wa.me/2250700080833", category: "devis" },
+  { id: "8", question: "Le devis est-il gratuit ?", answer: "Oui, tous nos devis sont gratuits et sans engagement.", category: "devis" },
+  { id: "9", question: "Quels sont vos délais moyens de livraison ?", answer: "Entre 24 et 72 heures selon la distance, le volume et le stock.", category: "livraison" },
+  { id: "10", question: "Livrez-vous hors d'Abidjan ?", answer: "Oui, nous desservons toutes les régions de Côte d'Ivoire.", category: "livraison" },
+  { id: "11", question: "Avez-vous un service de transport indépendant ?", answer: "Oui, nos camions peuvent être loués pour le transport de marchandises diverses, même non TRADLOG.", category: "livraison" },
+  { id: "12", question: "Offrez-vous un suivi de livraison ?", answer: "Oui, chaque commande bénéficie d'un numéro de suivi et d'un interlocuteur dédié.", category: "livraison" },
+  { id: "13", question: "Quelle est la marque de ciment que vous distribuez ?", answer: "Nous distribuons le Ciment Limak, reconnu pour sa solidité et sa constance de qualité.", category: "produits" },
+  { id: "14", question: "Quelle quantité minimale faut-il commander ?", answer: "Aucune contrainte : nous acceptons aussi bien les petites commandes que les volumes de chantier.", category: "devis" },
+  { id: "15", question: "Faites-vous des remises pour les gros volumes ?", answer: "Oui, des tarifs dégressifs sont appliqués à partir d'un certain tonnage.", category: "devis" },
+  { id: "16", question: "Comment sont stockés vos produits ?", answer: "Nos entrepôts sont secs, ventilés et sécurisés, garantissant la qualité du stockage.", category: "produits" },
+  { id: "17", question: "Quels types de clients servez-vous ?", answer: "Particuliers, entrepreneurs BTP, sociétés industrielles, collectivités et projets d'État.", category: "produits" },
+  { id: "18", question: "Proposez-vous une assistance technique ?", answer: "Oui, notre équipe peut vous conseiller sur les volumes, choix de matériaux et planification logistique.", category: "support" },
+  { id: "19", question: "Peut-on payer à la livraison ?", answer: "Oui, le paiement à la livraison est possible selon les modalités convenues.", category: "devis" },
+  { id: "20", question: "Acceptez-vous le paiement mobile ?", answer: "Oui, via Wave, Orange Money, Moov Money, ou virement bancaire.", category: "devis" },
+];
+
 const FAQSection = () => {
-  const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchFAQs = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("faqs")
-          .select("*")
-          .order("display_order", { ascending: true });
-
-        if (error) throw error;
-        setFaqs(data || []);
-      } catch (error) {
-        console.error("Erreur lors du chargement des FAQs:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFAQs();
-  }, []);
-
-  const filteredFaqs = faqs.filter(
+  const filteredFaqs = faqData.filter(
     (faq) =>
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
@@ -59,18 +60,6 @@ const FAQSection = () => {
     ...category,
     questions: filteredFaqs.filter((faq) => faq.category === category.key),
   }));
-
-  if (isLoading) {
-    return (
-      <section id="faq" className="py-20 bg-gradient-to-b from-background to-muted/20">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <p className="text-muted-foreground">Chargement des questions...</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section id="faq" className="py-20 bg-gradient-to-b from-background to-muted/20 overflow-hidden">

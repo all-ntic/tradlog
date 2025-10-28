@@ -203,6 +203,42 @@ export type Database = {
         }
         Relationships: []
       }
+      tradlog_contacts: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          message: string
+          name: string
+          phone: string
+          status: string | null
+          subject: string | null
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          message: string
+          name: string
+          phone: string
+          status?: string | null
+          subject?: string | null
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string
+          name?: string
+          phone?: string
+          status?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
