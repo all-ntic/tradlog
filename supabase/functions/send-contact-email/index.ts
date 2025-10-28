@@ -54,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailResponse = await resend.emails.send({
       from: "TRADLOG Contact <onboarding@resend.dev>",
-      to: ["johnkalini@outlook.com"],
+      to: ["all.ntic225@gmail.com"],
       subject: `Nouveau contact TRADLOG${subject ? ` - ${subject}` : ''} - ${name}`,
       html: emailContent,
       replyTo: email || undefined,
