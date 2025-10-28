@@ -14,111 +14,213 @@ export type Database = {
   }
   public: {
     Tables: {
+      chatbot_rate_limits: {
+        Row: {
+          created_at: string
+          id: string
+          identifier: string
+          request_count: number
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          identifier: string
+          request_count?: number
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          identifier?: string
+          request_count?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
+          appointment_date: string | null
           company: string | null
+          contact_type: string | null
           created_at: string
           email: string | null
           id: string
           message: string
           name: string
           phone: string | null
+          preferred_contact: string | null
           status: string | null
           subject: string | null
         }
         Insert: {
+          appointment_date?: string | null
           company?: string | null
+          contact_type?: string | null
           created_at?: string
           email?: string | null
           id?: string
           message: string
           name: string
           phone?: string | null
+          preferred_contact?: string | null
           status?: string | null
           subject?: string | null
         }
         Update: {
+          appointment_date?: string | null
           company?: string | null
+          contact_type?: string | null
           created_at?: string
           email?: string | null
           id?: string
           message?: string
           name?: string
           phone?: string | null
+          preferred_contact?: string | null
           status?: string | null
           subject?: string | null
         }
         Relationships: []
       }
-      faqs: {
+      donations: {
         Row: {
-          answer: string
-          category: string | null
+          amount: number
+          campaign: string | null
           created_at: string
-          display_order: number | null
+          currency: string | null
+          donor_email: string
+          donor_name: string
+          donor_phone: string | null
           id: string
-          question: string
+          message: string | null
+          payment_method: string | null
+          payment_status: string | null
+          paystack_reference: string
+          paystack_transaction_id: string | null
           updated_at: string
         }
         Insert: {
-          answer: string
-          category?: string | null
+          amount: number
+          campaign?: string | null
           created_at?: string
-          display_order?: number | null
+          currency?: string | null
+          donor_email: string
+          donor_name: string
+          donor_phone?: string | null
           id?: string
-          question: string
+          message?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          paystack_reference: string
+          paystack_transaction_id?: string | null
           updated_at?: string
         }
         Update: {
-          answer?: string
-          category?: string | null
+          amount?: number
+          campaign?: string | null
           created_at?: string
-          display_order?: number | null
+          currency?: string | null
+          donor_email?: string
+          donor_name?: string
+          donor_phone?: string | null
           id?: string
-          question?: string
+          message?: string | null
+          payment_method?: string | null
+          payment_status?: string | null
+          paystack_reference?: string
+          paystack_transaction_id?: string | null
           updated_at?: string
         }
         Relationships: []
       }
-      projects: {
+      "OLCAP-CI_message": {
         Row: {
-          category: string | null
+          appointment_date: string | null
+          company: string | null
+          contact_type: string | null
           created_at: string
-          description: string
-          display_order: number | null
+          email: string | null
           id: string
-          image_url: string | null
-          is_featured: boolean | null
-          project_url: string | null
-          technologies: string[] | null
-          title: string
-          updated_at: string
+          message: string
+          name: string
+          phone: string | null
+          preferred_contact: string | null
+          status: string | null
+          subject: string | null
         }
         Insert: {
-          category?: string | null
+          appointment_date?: string | null
+          company?: string | null
+          contact_type?: string | null
           created_at?: string
-          description: string
-          display_order?: number | null
+          email?: string | null
           id?: string
-          image_url?: string | null
-          is_featured?: boolean | null
-          project_url?: string | null
-          technologies?: string[] | null
-          title: string
-          updated_at?: string
+          message: string
+          name: string
+          phone?: string | null
+          preferred_contact?: string | null
+          status?: string | null
+          subject?: string | null
         }
         Update: {
-          category?: string | null
+          appointment_date?: string | null
+          company?: string | null
+          contact_type?: string | null
           created_at?: string
-          description?: string
-          display_order?: number | null
+          email?: string | null
           id?: string
-          image_url?: string | null
-          is_featured?: boolean | null
-          project_url?: string | null
-          technologies?: string[] | null
-          title?: string
-          updated_at?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          preferred_contact?: string | null
+          status?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
+      participants_secure: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          phone: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          phone: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -127,10 +229,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -257,6 +366,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
