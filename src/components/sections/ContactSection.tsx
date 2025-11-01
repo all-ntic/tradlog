@@ -26,23 +26,6 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      // Enregistrer dans la base de données
-      const { error: dbError } = await supabase
-        .from('tradlog_contacts')
-        .insert([
-          {
-            name: formData.name.trim(),
-            company: formData.company.trim() || null,
-            email: formData.email.trim() || null,
-            phone: formData.phone.trim(),
-            subject: formData.subject || null,
-            message: formData.message.trim(),
-            status: 'new'
-          }
-        ]);
-
-      if (dbError) throw dbError;
-
       // Envoyer l'email de notification
       const { error: emailError } = await supabase.functions.invoke('send-contact-email', {
         body: {
@@ -56,8 +39,7 @@ const ContactSection = () => {
       });
 
       if (emailError) {
-        console.error('Error sending email notification:', emailError);
-        // Ne pas bloquer l'utilisateur si l'email échoue
+        throw emailError;
       }
 
       toast({
